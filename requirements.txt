@@ -1,0 +1,5 @@
+Flask>=3.0.0
+qrcode[pil]>=7.4
+Pillow>=10.0.0
+segno>=1.6.0
+gunicorn==25.0.3  # Production WSGI server

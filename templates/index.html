@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator | Robotic Interface</title>
+    
+    <!-- Google Fonts for Robotic Theme -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Metallic Robotic CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Dark Mode Toggle -->
+        <div class="theme-toggle">
+            <button id="themeToggle" aria-label="Toggle dark mode">
+                <svg class="sun-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
+                    <path d="M10 2V4M10 16V18M18 10H16M4 10H2M15.657 4.343L14.243 5.757M5.757 14.243L4.343 15.657M15.657 15.657L14.243 14.243M5.757 5.757L4.343 4.343" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <svg class="moon-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M17 11.5C16.2 14.5 13.5 17 10 17C6 17 3 14 3 10C3 6.5 5.5 3.8 8.5 3C7.5 4 7 5.5 7 7C7 10 9.5 12.5 12.5 12.5C14 12.5 15.5 12 16.5 11L17 11.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main Card -->
+        <div class="card">
+            <div class="header">
+                <h1>QR Code Generator</h1>
+                <p class="subtitle">Create static QR codes for URLs and text</p>
+            </div>
+
+            <!-- Mode Selector -->
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="url">URL Mode</button>
+                <button class="mode-btn" data-mode="text">Text Mode</button>
+            </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <!-- URL Mode Input -->
+                <div class="input-group" id="urlInput">
+                    <label for="urlField">Enter URL</label>
+                    <input 
+                        type="text" 
+                        id="urlField" 
+                        placeholder="https://example.com"
+                        maxlength="2000"
+                    >
+                    <div class="helper-text">
+                        <span class="info-icon">ℹ️</span>
+                        <span>QR code will open this URL when scanned</span>
+                    </div>
+                    <div class="char-counter">
+                        <span id="urlCounter">0</span> / 2000 characters
+                    </div>
+                </div>
+
+                <!-- Text Mode Input -->
+                <div class="input-group hidden" id="textInput">
+                    <label for="textField">Enter Text</label>
+                    <textarea 
+                        id="textField" 
+                        placeholder="Hello World!"
+                        rows="4"
+                        maxlength="1200"
+                    ></textarea>
+                    <div class="helper-text">
+                        <span class="info-icon">ℹ️</span>
+                        <span>QR code will display this text when scanned</span>
+                    </div>
+                    <div class="char-counter">
+                        <span id="textCounter">0</span> / 1200 characters
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message hidden" id="errorMessage"></div>
+
+                <!-- Generate Button -->
+                <button class="btn btn-primary" id="generateBtn">Generate QR Code</button>
+            </div>
+
+            <!-- QR Preview Section -->
+            <div class="qr-preview hidden" id="qrPreview">
+                <div class="preview-header">
+                    <h3>Your QR Code</h3>
+                    <button class="btn-icon" id="clearBtn" title="Clear">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="preview-content">
+                    <img id="qrImage" alt="Generated QR Code">
+                </div>
+
+                <div class="preview-info">
+                    <span class="encoded-label">Encoded content:</span>
+                    <div class="encoded-content" id="encodedContent"></div>
+                </div>
+
+                <!-- Download Buttons -->
+                <div class="download-section">
+                    <button class="btn btn-secondary" id="downloadPNG">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 11L8 2M8 11L5 8M8 11L11 8M2 14H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Download PNG
+                    </button>
+                    <button class="btn btn-secondary" id="downloadSVG">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 11L8 2M8 11L5 8M8 11L11 8M2 14H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Download SVG
+                    </button>
+                    <button class="btn btn-secondary" id="copyBtn">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <rect x="5" y="5" width="9" height="9" rx="1" stroke="currentColor" stroke-width="2"/>
+                            <path d="M3 11V3C3 2.44772 3.44772 2 4 2H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Copy Content
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer Info -->
+            <div class="footer-info">
+                <p><strong>Static QR Codes:</strong> Generated QR codes encode data directly and work offline forever.</p>
+                <p class="note"><em>Note:</em> Some QR scanner apps may prioritize image search over text decoding for text mode; this does not affect QR validity.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
