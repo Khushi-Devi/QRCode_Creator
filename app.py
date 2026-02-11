@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, send_file, jsonify, Response
 import re
 from io import BytesIO
 import base64
+import os
 
 # Try to import qrcode libraries
 try:
@@ -237,17 +238,8 @@ def status():
 
 
 if __name__ == '__main__':
-    print(f"\n{'='*60}")
-    print(f"  🚀 Static QR Code Generator")
-    print(f"{'='*60}")
-    print(f"  QR Library: {QR_LIBRARY}")
-    if QR_LIBRARY == 'inline':
-        print(f"  ⚠️  Note: Using fallback QR generator (SVG placeholders)")
-        print(f"  💡 Tip: Install 'qrcode' and 'Pillow' for real QR codes:")
-        print(f"      pip install qrcode[pil] Pillow")
-    print(f"{'='*60}")
-    print(f"  🌐 Server running at: http://127.0.0.1:5000")
-    print(f"  📱 Open in your browser to start generating QR codes")
-    print(f"{'='*60}\n")
-    
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run(
+        debug=True,
+        host='0.0.0.0',
+        port=int(os.environ.get('PORT', 5000))
+    )
