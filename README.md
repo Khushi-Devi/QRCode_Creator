@@ -1,88 +1,58 @@
-# 📱 Static QR Code Generator
+# 📱 QR Hub
 
-A clean, professional Flask-based web application for generating static QR codes. Create QR codes for URLs and plain text that work forever, even offline.
+A Flask-based web application for generating QR codes for 8 different real-world use cases — URLs, plain text, email drafts, phone numbers, SMS messages, WiFi networks, map locations, and contact cards. Every QR code is generated on demand and never stored.
 
-![QR Code Generator](https://img.shields.io/badge/Flask-3.0.0-blue)
+![Flask](https://img.shields.io/badge/Flask-3.1-blue)
 ![Python](https://img.shields.io/badge/Python-3.8+-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ## ✨ Features
 
-### 🎯 Core Functionality
-- **Dual Mode Operation**
-  - **URL Mode**: Generate QR codes that open web links when scanned
-  - **Text Mode**: Generate QR codes that display plain text when scanned
+### 🎯 Core Functionality — 8 QR Types
 
-- **Static QR Codes**
-  - Encode data directly into the QR code
-  - No server dependency after generation
-  - Works offline forever
-  - No analytics, tracking, or redirects
+| Type | What scanning it does | Format used |
+|---|---|---|
+| **URL** | Opens a website | Raw URL (`https://...`) |
+| **Text** | Displays a plain message | Raw text |
+| **Email** | Opens a pre-filled email draft | `mailto:` |
+| **Phone** | Dials a number directly | `tel:` |
+| **SMS** | Opens a pre-filled text message | `sms:` |
+| **WiFi** | Joins a network instantly, no typing | `WIFI:` |
+| **Location** | Opens a map coordinate | `geo:` |
+| **Contact Card** | Saves a full contact (name, phone, email, org) straight to Contacts | `vCard` 3.0 |
 
-### 🎨 User Interface
-- **Clean, Professional Design**
-  - Centered card layout with neutral color palette
-  - Responsive design (works on desktop and mobile)
-  - Smooth animations and transitions
+Each type uses the actual standard format real phones already recognize — these are the same schemes used by `mailto:` links on websites, native "Add to Contacts" prompts, and built-in WiFi QR sharing on Android/iOS. Nothing here is a custom or proprietary format.
 
-- **Dark Mode Support**
-  - Toggle between light and dark themes
-  - Preference saved locally
-  - Easy on the eyes for extended use
+### 🔐 Static, Not Dynamic
 
-- **Interactive Features**
-  - Live character counter
-  - Real-time QR preview
-  - Input validation with helpful error messages
-  - Clear visual feedback
+QR Hub generates **static** QR codes — the destination data is encoded directly into the QR image itself, not a redirect link through a third-party service. This means:
 
-### 💾 Download Options
-- **PNG Format**: Perfect for sharing, printing, or embedding in documents
-- **SVG Format**: Scalable vector format ideal for professional use
-- **Copy Content**: Quick clipboard copy of encoded text/URL
-
-### 🔧 Technical Features
-- ISO/IEC 18004 compliant QR codes
-- Automatic version selection based on input length
-- Medium error correction for reliability
-- Character limits optimized for performance:
-  - URLs: 2000 characters max
-  - Text: 1200 characters max
-
----
-
-## 📖 Understanding Static QR Codes
-
-### What Are Static QR Codes?
-
-Static QR codes **directly encode** the destination data (URL or text) into the QR image itself. This means:
-
-✅ **Permanent**: Once created, they work forever  
-✅ **Offline**: No internet connection needed to scan  
-✅ **Private**: No tracking or analytics  
-✅ **Independent**: Server shutdown doesn't affect functionality  
+✅ **Permanent** — once created, a code works forever, with no dependency on QR Hub staying online
+✅ **Offline** — no internet connection needed to scan or decode
+✅ **Private** — no tracking, analytics, or redirect logging of any kind
+✅ **Independent** — taking the server down doesn't break any code you've already generated
 
 **Example:**
 ```
-URL: https://example.com
-Static QR → Encodes "https://example.com" directly
-When scanned → Opens https://example.com immediately
+Input:  example.com  (WiFi mode would instead take SSID + password)
+Static QR → Encodes "https://example.com" directly into the QR pixels
+Scan it  → Opens https://example.com immediately, no middleman server involved
 ```
 
-### URL QR vs Text QR
+### 🎨 User Interface
 
-| Feature | URL Mode | Text Mode |
-|---------|----------|-----------|
-| **Primary Use** | Website links, social media profiles | Messages, contact info, WiFi passwords |
-| **Scanner Behavior** | Opens URL in browser | Displays text or prompts action |
-| **Max Length** | 2000 characters | 1200 characters |
-| **Format** | Must be valid URL (http/https) | Any plain text |
+- Landing grid of all 8 QR types, each with its own illustrated card
+- Light and dark themes, toggle persists across visits (`localStorage`)
+- Dedicated generator screen per type, with the relevant fields only
+- Live QR preview before downloading — generate, look, adjust, regenerate
+- Split-screen result view (your details on the left, QR code on the right) once a code is generated
+- Inline validation with specific error messages (e.g. *"Network name is too long (max 32 characters)"*, not a generic "invalid input")
 
-### Important Note on Text QR Scanning
+### 💾 Download Options
 
-> ⚠️ **Scanner App Behavior**: Some QR scanner apps (especially on smartphones) may prioritize **Google Lens image search** over text decoding when scanning text-based QR codes. This does **not** affect the validity of your QR code—it's simply how some scanner apps are configured.
->
-> **Recommendation**: Use dedicated QR code scanner apps or built-in camera QR readers for best results with text QR codes.
+- **PNG** — raster image, good for sharing, printing, or embedding in documents
+- **SVG** — scalable vector format, no quality loss at any print size
+- **Copy** — one-click clipboard copy of the exact encoded string
 
 ---
 
@@ -95,81 +65,65 @@ When scanned → Opens https://example.com immediately
 
 ### Installation
 
-1. **Clone or download this repository**
-   ```bash
-   cd qr-code-generator
-   ```
+```bash
+cd qr-hub
+pip install -r requirements.txt
+```
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-   Or install manually:
-   ```bash
-   pip install Flask qrcode[pil] Pillow
-   ```
+Or install manually:
+```bash
+pip install Flask qrcode[pil] Pillow gunicorn
+```
 
 ### Running the Application
 
-1. **Start the Flask server**
-   ```bash
-   python app.py
-   ```
+```bash
+python app.py
+```
 
-2. **Open your browser**
-   ```
-   http://127.0.0.1:5000
-   ```
+Then visit `http://127.0.0.1:5000` 🎉
 
-3. **Start generating QR codes!** 🎉
+By default, debug mode is **off**. To enable it for local development:
+```bash
+FLASK_DEBUG=1 python app.py
+```
 
 ---
 
 ## 📁 Project Structure
 
 ```
-qr-code-generator/
+qr-hub/
 │
-├── app.py                 # Flask backend server
+├── app.py                 # Flask backend — all 8 mode builders, validation, routes
 ├── requirements.txt       # Python dependencies
+├── README.md              # This file
 │
 ├── templates/
-│   └── index.html        # Main HTML template
+│   └── index.html         # Landing grid + generator view (single page)
 │
-├── static/
-│   ├── styles.css        # CSS styling (with dark mode)
-│   └── script.js         # Frontend JavaScript logic
-│
-└── README.md             # This file
+└── static/
+    ├── styles.css          # Light/dark theme, card grid, animations
+    └── script.js           # View routing, form handling, fetch calls
 ```
 
 ---
 
 ## 🎮 Usage Guide
 
-### Generating a URL QR Code
+1. Pick a QR type from the landing grid (e.g. **WiFi**)
+2. Fill in the relevant fields — only the fields that type needs are shown
+3. Click **Generate QR Code** to preview it
+4. Download as **PNG** or **SVG**, or **Copy** the exact encoded content
+5. Click the logo or **← All QR types** to go back and pick a different type
 
-1. Select **URL Mode** (default)
-2. Enter a website URL (e.g., `google.com` or `https://example.com`)
-   - The app automatically adds `https://` if missing
-3. Click **Generate QR Code**
-4. Preview your QR code
-5. Download as PNG or SVG, or copy the URL
+### WiFi-specific note
 
-### Generating a Text QR Code
+Choose a security type (WPA/WPA2, WEP, or "No password"). If your network name or password contains `;`, `,`, `:`, or `\`, QR Hub automatically escapes those characters — you don't need to do anything special, but it's worth knowing they're handled, since unescaped versions of those characters would otherwise break the QR payload.
 
-1. Switch to **Text Mode**
-2. Enter any plain text (max 1200 characters)
-   - Examples: messages, contact info, WiFi credentials
-3. Click **Generate QR Code**
-4. Preview your QR code
-5. Download or copy the text
+### Contact Card-specific note
 
-### Download Formats
-
-- **PNG**: Raster image, perfect for most uses (300x300px default)
-- **SVG**: Vector image, scalable without quality loss (ideal for printing large formats)
+Name is required, plus **either** a phone number **or** an email (you don't need both). Organization and website are optional. This produces a real vCard 3.0 file — the same format your phone already uses internally for every contact — so most phones will offer "Add to Contacts" directly rather than just showing raw text.
 
 ---
 
@@ -177,140 +131,137 @@ qr-code-generator/
 
 ### QR Code Specifications
 
-- **Standard**: ISO/IEC 18004
-- **Version**: Auto-selected (1-40) based on data length
-- **Error Correction**: Medium (M) - ~15% damage tolerance
-- **Module Size**: 10 pixels per module
-- **Border**: 4 modules (quiet zone)
+- **Standard**: ISO/IEC 18004 (via the `qrcode` Python library)
+- **Version**: Auto-selected based on data length
+- **Error Correction**: Medium (M) — roughly 15% damage tolerance before a scan fails
+- **Module size**: 10 pixels per module, 4-module quiet zone border
 
-### Character Limits
+### Field Limits & Validation
 
-These limits ensure optimal performance and scannability:
+| Field | Limit / Rule |
+|---|---|
+| URL | 2000 characters; `https://` auto-added if missing |
+| Text | 1200 characters |
+| Email subject/body | 200 / 500 characters (both optional) |
+| Phone number | Digits only, optional leading `+`, 7–15 digits |
+| SMS message | 300 characters (optional) |
+| WiFi SSID | 32 characters max (matches the real WiFi spec limit) |
+| WiFi password | 63 characters max (matches the real WPA spec limit) |
+| Location | Latitude −90 to 90, longitude −180 to 180 |
+| Contact Card | Name required; phone *or* email required; org/website optional |
 
-| Data Type | Max Characters | Reason |
-|-----------|---------------|--------|
-| URL | 2000 | Balances between long URLs and QR complexity |
-| Text | 1200 | Optimal for UTF-8 encoded text |
-
-**Note**: Longer data = larger QR code = potentially harder to scan. These limits strike a balance between functionality and usability.
-
-### Browser Compatibility
-
-✅ Chrome/Edge (v90+)  
-✅ Firefox (v88+)  
-✅ Safari (v14+)  
-✅ Mobile browsers (iOS Safari, Chrome Mobile)
-
----
-
-## 🛠️ Development
-
-### Dependencies
-
-```txt
-Flask==3.0.0          # Web framework
-qrcode[pil]==7.4.2    # QR code generation
-Pillow==10.1.0        # Image processing
-```
+These aren't arbitrary — several match the actual technical limits of the standards involved (e.g. WiFi SSID/password lengths are capped by the WiFi spec itself, not chosen by this app).
 
 ### API Endpoints
 
 **POST** `/preview`
-- Generates QR code preview (PNG)
-- Request body: `{ "mode": "url|text", "content": "..." }`
-- Returns: PNG image
+Generates a QR code for inline preview.
+Request body: `{ "mode": "wifi", "fields": { "ssid": "...", "password": "...", "security": "WPA" } }`
+Returns: PNG (or SVG, if the `qrcode` library isn't available) with an `X-Encoded-Content` header containing the exact string that was encoded.
 
 **POST** `/generate`
-- Downloads QR code in requested format
-- Request body: `{ "mode": "url|text", "content": "...", "format": "png|svg" }`
-- Returns: File download
+Same validation as `/preview`, but forces a file download.
+Request body: same shape as above, plus `"format": "png"` or `"svg"`.
+Returns: file download.
 
-### Key Functions
+**GET** `/status`
+Returns which QR rendering library is active, useful for debugging deployment issues.
 
-- `generate_qr_code(data, format_type)`: Creates QR code image
-- `is_valid_url(url)`: Validates URL format
-- Auto-version selection based on data length
+### Key Functions (`app.py`)
+
+- `build_qr_content(mode, fields)` — single entry point; looks up the right builder in `MODE_BUILDERS` and returns the validated, formatted string
+- `build_wifi()` / `escape_wifi_value()` — WiFi payload construction and special-character escaping
+- `build_vcard()` / `escape_vcard_value()` — vCard 3.0 construction and escaping
+- `generate_qr_code(data, format_type)` — renders the final string into a PNG or SVG image
 
 ---
 
 ## 🎨 Customization
 
-### Modifying Character Limits
+### Adjusting limits
 
-Edit `app.py`:
+Edit the constants near the top of `app.py`:
 ```python
-MAX_TEXT_LENGTH = 1200  # Change text limit
-MAX_URL_LENGTH = 2000   # Change URL limit
+MAX_TEXT_LENGTH = 1200
+MAX_URL_LENGTH = 2000
 ```
+Per-field limits for newer modes (WiFi, SMS, vCard, etc.) are inline in their respective `build_*` functions rather than top-level constants — search for the relevant `raise ValueError(...)` line to find and adjust them.
 
-### Changing QR Code Settings
+### Changing QR rendering settings
 
-Modify the QR instance in `app.py`:
+In `generate_qr_code_real()`:
 ```python
 qr = qrcode.QRCode(
-    version=None,  # 1-40 or None for auto
-    error_correction=qrcode.constants.ERROR_CORRECT_M,  # L, M, Q, H
-    box_size=10,   # Pixels per module
-    border=4,      # Quiet zone width
+    version=None,                                   # 1-40, or None for auto
+    error_correction=qrcode.constants.ERROR_CORRECT_M,  # L, M, Q, or H
+    box_size=10,                                     # pixels per module
+    border=4,                                        # quiet zone width
 )
 ```
 
 ### Theming
 
-Colors and styles are defined in `static/styles.css` using CSS variables:
+Both themes are CSS custom properties in `static/styles.css`:
 ```css
 :root {
-    --primary: #4f46e5;        /* Main brand color */
-    --bg-primary: #f5f7fa;     /* Light mode background */
+    --primary: #7b93d6;
+    --bg: linear-gradient(135deg, #eef3ff 0%, #e4edfc 55%, #f7eefc 100%);
     /* ... */
 }
 
 [data-theme="dark"] {
-    --bg-primary: #0f172a;     /* Dark mode background */
+    --bg: linear-gradient(135deg, #1c1c1f 0%, #202023 100%);
     /* ... */
 }
 ```
+Adding a 9th QR type involves four small additions, not a rewrite: one `build_*` function and one `MODE_BUILDERS` entry in `app.py`; one card + one input group in `index.html`; one `MODE_META` / `MODE_INPUT_IDS` entry in `script.js`.
 
 ---
 
 ## 🔒 Privacy & Security
 
-- **No Data Storage**: QR codes are generated on-demand and not saved
-- **No Analytics**: Zero tracking, cookies, or user data collection
-- **Client-Side Theme**: Dark mode preference stored in browser localStorage only
-- **Local Operation**: Runs entirely on your machine (localhost)
+- **No data storage** — every QR code is generated in memory and streamed back; nothing is written to disk or a database
+- **No analytics or tracking** — zero cookies, zero third-party scripts
+- **Client-side theme only** — light/dark preference lives in the browser's `localStorage`, never sent to the server
+- **Debug mode is off by default** — only enabled explicitly via `FLASK_DEBUG=1`, and never active at all when run through a production server like gunicorn
+- **No sensitive data in logs** — request logging intentionally avoids printing raw form fields, since WiFi passwords and contact details pass through this endpoint
 
 ---
 
 ## 🐛 Troubleshooting
 
-### QR Code Won't Scan
-- Ensure proper lighting when scanning
-- Hold phone steady and at appropriate distance
-- Try a different QR scanner app
-- Check if input exceeds character limits
+### QR code won't scan
+- Make sure there's good, even lighting and the camera isn't too close or too far
+- Try a dedicated QR scanner app if your default camera app seems unreliable
+- Check that your input wasn't silently truncated by a character limit
 
-### URL Not Opening
-- Verify URL includes `http://` or `https://`
-- Test URL in browser before generating QR
-- Some special characters may cause issues
+### WiFi QR doesn't connect
+- Double-check the security type matches your actual network (WPA/WPA2 is most common; pick "No password" only for genuinely open networks)
+- SSID and password are case-sensitive — exact match required
 
-### Text QR Shows Search Instead of Text
-- This is scanner app behavior, not a QR code issue
-- Use dedicated QR readers instead of Google Lens
-- The QR code still contains correct data
+### Contact Card doesn't offer "Add to Contacts"
+- Some less common QR scanner apps only show raw text instead of recognizing vCard data — try your phone's built-in camera app instead of a third-party scanner
+- Make sure at least a phone number or email was provided; a name alone isn't enough to generate a valid card
 
-### Application Won't Start
+### Application won't start
 ```bash
-# Check Python version
-python --version  # Should be 3.8+
-
-# Reinstall dependencies
+python --version          # should be 3.8+
 pip install -r requirements.txt --upgrade
-
-# Try running with explicit host/port
 python app.py
 ```
+
+### "Failed to fetch" in the browser
+This usually means the browser is talking to a stale cached version of the page or an old server process that's still running, rather than a real backend error. Fully stop the server (Ctrl+C, not just closing the tab), restart it, and hard-refresh the browser (Ctrl/Cmd+Shift+R) before assuming it's a code bug.
+
+---
+
+## ☁️ Deploying
+
+Designed to deploy easily on free-tier hosts like Render:
+- **Build command:** `pip install -r requirements.txt`
+- **Start command:** `gunicorn app:app`
+
+HTTPS is handled automatically by the host — no certificate setup required. Note that free tiers typically spin down after a period of inactivity, causing a slow (~60s) first load after idle time.
 
 ---
 
@@ -324,17 +275,7 @@ This project is open source and available under the MIT License.
 
 - Built with [Flask](https://flask.palletsprojects.com/)
 - QR generation powered by [python-qrcode](https://github.com/lincolnloop/python-qrcode)
-- Icons inspired by [Heroicons](https://heroicons.com/)
 
 ---
 
-## 📧 Support
-
-If you encounter any issues or have questions:
-1. Check the troubleshooting section above
-2. Review the code comments in `app.py` and `script.js`
-3. Open an issue on the project repository
-
----
-
-**Made with ❤️ for quick, offline QR code generation**
+**Made for fast, offline-friendly QR code generation — no tracking, no accounts, nothing stored.**
