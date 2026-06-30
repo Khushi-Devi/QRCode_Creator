@@ -119,17 +119,87 @@ button {
     padding: 18px 32px;
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-elevated);
+    position: relative;
+    overflow: hidden;
+}
+
+/* slow light sweep across the bar */
+.topbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--primary-soft), transparent);
+    animation: navShimmer 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes navShimmer {
+    0%   { left: -60%; }
+    50%  { left: 110%; }
+    100% { left: 110%; }
 }
 
 .brand {
-    font-family: 'Quicksand', sans-serif;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    position: relative;
     background: none;
     border: none;
     cursor: pointer;
+    padding: 4px 2px;
+}
+
+.brand-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: var(--icon-gradient, var(--btn-gradient));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(123, 147, 214, 0.4);
+    animation: brandBob 2.6s ease-in-out infinite;
+}
+
+@keyframes brandBob {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-3px) rotate(-5deg); }
+}
+
+.brand-text {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    background: linear-gradient(100deg, var(--text-primary) 0%, var(--primary) 35%, var(--text-primary) 70%);
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: brandGradient 5s ease-in-out infinite;
+}
+
+@keyframes brandGradient {
+    0%   { background-position: 0% center; }
+    100% { background-position: 220% center; }
+}
+
+.brand-sparkle {
+    position: absolute;
+    top: -4px;
+    right: -14px;
+    font-size: 12px;
+    color: #f0c869;
+    animation: brandTwinkle 2.2s ease-in-out infinite;
+}
+
+@keyframes brandTwinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50%      { opacity: 1; transform: scale(1.15); }
 }
 
 #themeToggle {
@@ -143,12 +213,14 @@ button {
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
-    transition: var(--transition);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 #themeToggle:hover {
     border-color: var(--primary);
     color: var(--primary);
+    transform: rotate(18deg) scale(1.08);
+    box-shadow: 0 4px 12px var(--primary-soft);
 }
 
 [data-theme="light"] .moon-icon,
